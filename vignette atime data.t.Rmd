@@ -1,0 +1,366 @@
+---
+title: "vignette atime"
+author: "Doris Amoakohene"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+
+Modify atime compare-data.table-tidyverse vignette, and analyze efficiency of packages such as polars, arrow, collapse, spark.
+To modify the atime vignette in the compare-data.table-tidyverse package and analyze the efficiency of packages such as polars, arrow, collapse, and spark, you would need to perform the following steps:
+
+Perform Comparison with 
+data.table
+arrow
+
+adding:
+
+collapse 
+spark
+
+
+The purpose of this vignette is to make figures which show the efficiency of data.table.
+
+fwrite: Fast csv writer
+
+```{r}
+library(data.table)
+library(readr)
+library(arrow)
+library(ggplot2)
+library(collapse)
+#library(sparklyr)
+library(polars)
+library(dplyr)
+library(plyr)
+library(tidyr)
+library(stats)
+
+#sc <- sparklyr::spark_connect(master = "local")
+```
+
+```{r}
+write.colors <- c(
+  "readr::write_csv"="#9970AB",
+  "data.table::fwrite"="#D6604D",
+  "write_csv_arrow"="#BF812D", 
+  "polars::write_csv"="#33A02C",
+  "write_CSV_COllapse" = "#722f37",
+  #"write_csv_spark"= "pink",
+  "write.csv2"= "#1F78B4",
+  "utils::write.csv"="deepskyblue")
+
+n.rows <- 100
+seconds.limit <- 1
+
+
+atime.write.vary.cols <- atime::atime(
+  N=as.integer(10^seq(2, 6, by=0.5)),
+  setup={
+    set.seed(1)
+    input.vec <- rnorm(n.rows*N)
+    input.mat <- matrix(input.vec, n.rows, N)
+    input.df <- data.frame(input.mat)
+    #spark_df<- copy_to(sc,input.mat, name = "spark_df")
+    
+  },
+  seconds.limit = seconds.limit,
+  "data.table::fwrite"={
+    data.table::fwrite(input.df, tempfile(), showProgress = FALSE)
+  },
+  "write_csv_arrow"={
+    arrow::write_csv_arrow(input.df, tempfile())
+  },
+  "readr::write_csv"={
+    readr::write_csv(input.df, tempfile(), progress = FALSE)
+  },
+  "polars::write_csv" = {
+    write_csv(input.df, tempfile())
+  },
+  "write_csv_collapse"={
+    write.csv(input.df,tempfile())
+  },
+  #"write_csv_spark"={
+    #spark_write_csv(spark_df, tempfile(), mode = "overwrite")
+  #},
+  "write.csv2" = {
+    write.csv2(input.df, tempfile())
+  },
+  "utils::write.csv"= {
+    utils::write.csv(input.df, tempfile())
+  }
+)
+```
+
+
+
+```{r}
+refs.write.vary.cols <- atime::references_best(atime.write.vary.cols)
+pred.write.vary.cols <- predict(refs.write.vary.cols)
+
+gg.write <- plot(pred.write.vary.cols)+
+  theme(text=element_text(size=20))+
+  ggtitle(sprintf("Write real numbers to CSV, %d x N", n.rows))+
+  scale_x_log10("N = number of columns to write")+
+  scale_y_log10("Computation time (seconds)
+median line, min/max band
+over 10 timings")+
+  facet_null()+
+  scale_fill_manual(values=write.colors)+
+  scale_color_manual(values=write.colors)
+
+```
+
+```{r}
+gg.write
+```
+
+fread: fast CSV reader
+
+```{r}
+read.colors <- c(
+  "readr::read_csv\n(lazy=TRUE)"="#9970AB",
+  "readr::read_csv\n(lazy=FALSE)"="#9970AB",
+  "data.table::fread"="#D6604D",
+  "read_csv_arrow"="#BF812D",
+  "polars::read_csv"="#33A02C",
+  "read_csv_collapse"="#722f37",
+  "read.csv2" = "#1F78B4",
+  "utils::read.csv"="deepskyblue")
+
+atime.read.vary.cols <- atime::atime(
+  N=as.integer(10^seq(2, 6, by=0.5)),
+  setup={
+    set.seed(1)
+    input.vec <- rnorm(n.rows*N)
+    input.mat <- matrix(input.vec, n.rows, N)
+    input.df <- data.frame(input.mat)
+    input.csv <- tempfile()
+    fwrite(input.df, input.csv)
+  },
+  seconds.limit = seconds.limit,
+  "data.table::fread"={
+    data.table::fread(input.csv, showProgress = FALSE)
+  },
+  "read_csv_arrow"={
+    arrow::read_csv_arrow(input.csv)
+  },
+  "readr::read_csv\n(lazy=TRUE)"={
+    readr::read_csv(input.csv, progress = FALSE, show_col_types = FALSE, lazy=TRUE)
+  },
+  "readr::read_csv\n(lazy=FALSE)"={
+    readr::read_csv(input.csv, progress = FALSE, show_col_types = FALSE, lazy=FALSE)
+  },
+  "polars::read_csv" = {
+    read_csv(input.csv)
+  },
+  "read_csv_collapse"={
+    read.csv(input.csv)
+  },
+   "read.csv2" = {
+    read.csv2(input.csv)
+   },
+  "utils::read.csv"=utils::read.csv(input.csv))
+```
+
+
+```{r}
+refs.read.vary.cols <- atime::references_best(atime.read.vary.cols)
+pred.read.vary.cols <- predict(refs.read.vary.cols)
+
+gg.read <- plot(pred.read.vary.cols)+
+  theme(text=element_text(size=20))+
+  ggtitle(sprintf("Read real numbers from CSV, %d x N", n.rows))+
+  scale_x_log10("N = number of columns to read")+
+  scale_y_log10("Computation time (seconds)
+median line, min/max band
+over 10 timings")+
+  facet_null()+
+  scale_fill_manual(values=read.colors)+
+  scale_color_manual(values=read.colors)
+```
+
+```{r}
+gg.read
+```
+
+
+Summarize by group
+
+
+
+```{r}
+ml.colors <- c(
+  "dplyr::summarise"="#9970AB",
+  "[.data.table"="#D6604D",
+  "stats::aggregate"="deepskyblue",
+  "plyr::ddply"="orange",
+  "tidyr::pivot_longer"="green")
+options(dplyr.summarise.inform=FALSE)
+n.folds <- 10
+ml.atime <- atime::atime(
+  N=as.integer(10^seq(2, 7, by=0.5)),
+  setup={
+    loss.dt <- data.table(
+      name="loss", 
+      fold=rep(1:n.folds, each=2*N),
+      loss=rnorm(2*N*n.folds),
+      set=rep(c("subtrain","validation"),each=N),
+      epoch=1:N,
+      key=c("set","epoch","fold"))
+  },
+  seconds.limit=seconds.limit,
+  "[.data.table"={
+    loss.dt[, .(
+      loss_length=.N,
+      loss_mean=mean(loss),
+      loss_sd=sd(loss)
+    ), by=.(set, epoch)]
+  },
+  "stats::aggregate"={
+    res <- stats::aggregate(
+      loss ~ set + epoch, 
+      loss.dt, 
+      function(values)list(c(
+        loss_length=length(values),
+        loss_mean=mean(values), 
+        loss_sd=sd(values))))
+    data.frame(
+      subset(res, select=-loss), 
+      do.call(rbind, res$loss))
+  },
+  "plyr::ddply"={
+    ddply(loss.dt, c("set", "epoch"), summarize,
+          loss_length = length(loss),
+          loss_mean = mean(loss),
+          loss_sd = sd(loss))
+  },
+  "tidyr::pivot_longer"={
+    tidy_data <- pivot_longer(loss.dt, cols = starts_with("loss"), names_to = "GroupVar", values_to = "NumericVar")
+    
+    summary_data <- tidy_data %>%
+      group_by(set, epoch) %>%
+      summarise(
+        loss_length = length(NumericVar),
+        loss_mean = mean(NumericVar),
+        loss_sd = sd(NumericVar)
+      )
+    },
+  "dplyr::summarise"={
+    loss.dt |> 
+      dplyr::group_by(set, epoch) |> 
+      dplyr::summarise(
+        loss_length=length(loss),
+        loss_mean=mean(loss), 
+        loss_sd=sd(loss))
+  })
+
+```
+
+
+```{r}
+ml.refs <- atime::references_best(ml.atime)
+ml.pred <- predict(ml.refs)
+ml.gg <- plot(ml.pred)+
+  theme(text=element_text(size=20))+
+  ggtitle(sprintf("Mean,SD,Length over %d real numbers, N times", n.folds))+
+  scale_x_log10("N = number of Mean,SD,Length to compute")+
+  scale_y_log10("Computation time (seconds)
+median line, min/max band
+over 10 timings")+
+  facet_null()+
+  scale_fill_manual(values=ml.colors)+
+  scale_color_manual(values=ml.colors)
+
+```
+
+
+```{r}
+ml.gg
+```
+
+Summarize by group, expanded
+```{r}
+options(dplyr.summarise.inform=FALSE)
+n.folds <- 10
+ml.exp.atime <- atime::atime(
+  N=as.integer(10^seq(2, 7, by=0.5)),
+  setup={
+    loss.dt <- data.table(
+      name="loss", 
+      fold=rep(1:n.folds, each=2*N),
+      loss=rnorm(2*N*n.folds),
+      set=rep(c("subtrain","validation"),each=N),
+      epoch=1:N)
+    key.dt <- data.table(loss.dt, key=c("set","epoch","fold"))
+  },
+  seconds.limit=seconds.limit,
+  "[.data.table(no key)"={
+    loss.dt[, .(
+      loss_length=.N,
+      loss_mean=mean(loss),
+      loss_sd=sd(loss)
+    ), by=.(set, epoch)]
+  },
+  "[.data.table(key)"={
+    key.dt[, .(
+      loss_length=.N,
+      loss_mean=mean(loss),
+      loss_sd=sd(loss)
+    ), by=.(set, epoch)]
+  },
+  "stats::aggregate"={
+    res <- stats::aggregate(
+      loss ~ set + epoch, 
+      loss.dt, 
+      function(values)list(c(
+        loss_length=length(values),
+        loss_mean=mean(values), 
+        loss_sd=sd(values))))
+    data.frame(
+      subset(res, select=-loss), 
+      do.call(rbind, res$loss))
+  },
+  "dplyr::summarise"={
+    loss.dt |> 
+      dplyr::group_by(set, epoch) |> 
+      dplyr::summarise(
+        loss_length=length(loss),
+        loss_mean=mean(loss), 
+        loss_sd=sd(loss))
+  },
+  "collapse::fsummarise"={
+    loss.dt |> 
+      collapse::fgroup_by(set, epoch) |> 
+      collapse::fsummarise(
+        loss_length=length(loss),
+        loss_mean=mean(loss), 
+        loss_sd=sd(loss))
+  })
+
+```
+```{r}
+ml.exp.refs <- atime::references_best(ml.exp.atime)
+ml.exp.pred <- predict(ml.exp.refs)
+ml.exp.colors <- c(
+  "collapse::fsummarise"="#5AAE61",
+  "dplyr::summarise"="#9970AB",
+  "[.data.table(key)"="#D6604D",
+  "[.data.table(no key)"="#B6604D",
+  "stats::aggregate"="deepskyblue")
+ml.exp.gg <- plot(ml.exp.pred)+
+  theme(text=element_text(size=20))+
+  ggtitle(sprintf("Mean,SD,Length over %d real numbers, N times", n.folds))+
+  scale_x_log10("N = number of Mean,SD,Length to compute")+
+  scale_y_log10("Computation time (seconds)
+median line, min/max band
+over 10 timings")+
+  facet_null()+
+  scale_fill_manual(values=ml.exp.colors)+
+  scale_color_manual(values=ml.exp.colors)
+```
+
+```{r}
+ml.exp.gg
+```
+

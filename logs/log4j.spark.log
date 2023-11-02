@@ -1,0 +1,4 @@
+23/10/31 10:52:52 ERROR UserGroupInformation: Unable to find JAAS classes:org.apache.hadoop.shaded.com.ibm.security.auth.UsernamePrincipal
+23/10/31 10:53:10 INFO HiveConf: Found configuration file file:/C:/Users/Doris%20Afriyie/AppData/Local/spark/spark-3.2.0-bin-hadoop3.2/conf/hive-site.xml
+23/10/31 10:53:11 INFO SparkContext: Running Spark version 3.2.0
+23/10/31 10:53:11 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable

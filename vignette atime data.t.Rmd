@@ -25,6 +25,7 @@ fwrite: Fast csv writer
 
 ```{r}
 library(data.table)
+library(reshape2)
 library(readr)
 library(arrow)
 library(ggplot2)
@@ -35,6 +36,9 @@ library(dplyr)
 library(plyr)
 library(tidyr)
 library(stats)
+library(readxl)
+library(summarytools)
+library(psych)
 
 #sc <- sparklyr::spark_connect(master = "local")
 ```
@@ -44,10 +48,7 @@ write.colors <- c(
   "readr::write_csv"="#9970AB",
   "data.table::fwrite"="#D6604D",
   "write_csv_arrow"="#BF812D", 
-  "polars::write_csv"="#33A02C",
-  "write_CSV_COllapse" = "#722f37",
-  #"write_csv_spark"= "pink",
-  "write.csv2"= "#1F78B4",
+  #"sparklyr::spark_write_csv" = "#722f37",
   "utils::write.csv"="deepskyblue")
 
 n.rows <- 100
@@ -74,18 +75,9 @@ atime.write.vary.cols <- atime::atime(
   "readr::write_csv"={
     readr::write_csv(input.df, tempfile(), progress = FALSE)
   },
-  "polars::write_csv" = {
-    write_csv(input.df, tempfile())
-  },
-  "write_csv_collapse"={
-    write.csv(input.df,tempfile())
-  },
   #"write_csv_spark"={
     #spark_write_csv(spark_df, tempfile(), mode = "overwrite")
   #},
-  "write.csv2" = {
-    write.csv2(input.df, tempfile())
-  },
   "utils::write.csv"= {
     utils::write.csv(input.df, tempfile())
   }
@@ -120,13 +112,12 @@ fread: fast CSV reader
 ```{r}
 read.colors <- c(
   "readr::read_csv\n(lazy=TRUE)"="#9970AB",
-  "readr::read_csv\n(lazy=FALSE)"="#9970AB",
   "data.table::fread"="#D6604D",
   "read_csv_arrow"="#BF812D",
-  "polars::read_csv"="#33A02C",
-  "read_csv_collapse"="#722f37",
-  "read.csv2" = "#1F78B4",
-  "utils::read.csv"="deepskyblue")
+  #"sparklyr::spark_read_csv"="#33A02C",
+  "polars::pl$read_csv"="orange",
+  "utils::read.csv" = "deepskyblue")
+
 
 atime.read.vary.cols <- atime::atime(
   N=as.integer(10^seq(2, 6, by=0.5)),
@@ -148,18 +139,11 @@ atime.read.vary.cols <- atime::atime(
   "readr::read_csv\n(lazy=TRUE)"={
     readr::read_csv(input.csv, progress = FALSE, show_col_types = FALSE, lazy=TRUE)
   },
-  "readr::read_csv\n(lazy=FALSE)"={
-    readr::read_csv(input.csv, progress = FALSE, show_col_types = FALSE, lazy=FALSE)
+  "polars::pl$read_csv" = {
+    polars::pl$read_csv(input.csv)
   },
-  "polars::read_csv" = {
-    read_csv(input.csv)
-  },
-  "read_csv_collapse"={
-    read.csv(input.csv)
-  },
-   "read.csv2" = {
-    read.csv2(input.csv)
-   },
+  #"sparklyr::spark_read_csv"= sparklyr::spark_read_csv(input.csv)
+  #},
   "utils::read.csv"=utils::read.csv(input.csv))
 ```
 
@@ -194,8 +178,10 @@ ml.colors <- c(
   "dplyr::summarise"="#9970AB",
   "[.data.table"="#D6604D",
   "stats::aggregate"="deepskyblue",
-  "plyr::ddply"="orange",
-  "tidyr::pivot_longer"="green")
+  "summarytools::descr"="#00BFC4",
+  "psych::describe"="#FFA500",
+  "plyr::ddply"="orange")
+  
 options(dplyr.summarise.inform=FALSE)
 n.folds <- 10
 ml.atime <- atime::atime(
@@ -235,25 +221,15 @@ ml.atime <- atime::atime(
           loss_mean = mean(loss),
           loss_sd = sd(loss))
   },
-  "tidyr::pivot_longer"={
-    tidy_data <- pivot_longer(loss.dt, cols = starts_with("loss"), names_to = "GroupVar", values_to = "NumericVar")
-    
-    summary_data <- tidy_data %>%
-      group_by(set, epoch) %>%
-      summarise(
-        loss_length = length(NumericVar),
-        loss_mean = mean(NumericVar),
-        loss_sd = sd(NumericVar)
-      )
-    },
   "dplyr::summarise"={
     loss.dt |> 
       dplyr::group_by(set, epoch) |> 
       dplyr::summarise(
         loss_length=length(loss),
         loss_mean=mean(loss), 
-        loss_sd=sd(loss))
-  })
+        loss_sd=sd(loss)
+        )
+    })
 
 ```
 
@@ -291,19 +267,12 @@ ml.exp.atime <- atime::atime(
       fold=rep(1:n.folds, each=2*N),
       loss=rnorm(2*N*n.folds),
       set=rep(c("subtrain","validation"),each=N),
-      epoch=1:N)
-    key.dt <- data.table(loss.dt, key=c("set","epoch","fold"))
-  },
+      epoch=1:N,
+      key=c("set","epoch","fold"))
+    },
   seconds.limit=seconds.limit,
-  "[.data.table(no key)"={
+  "[.data.table"={
     loss.dt[, .(
-      loss_length=.N,
-      loss_mean=mean(loss),
-      loss_sd=sd(loss)
-    ), by=.(set, epoch)]
-  },
-  "[.data.table(key)"={
-    key.dt[, .(
       loss_length=.N,
       loss_mean=mean(loss),
       loss_sd=sd(loss)
@@ -339,6 +308,7 @@ ml.exp.atime <- atime::atime(
   })
 
 ```
+
 ```{r}
 ml.exp.refs <- atime::references_best(ml.exp.atime)
 ml.exp.pred <- predict(ml.exp.refs)
@@ -362,5 +332,125 @@ over 10 timings")+
 
 ```{r}
 ml.exp.gg
+```
+
+
+Reshaping wide to long 
+```{r}
+ml.colors <- c(
+  "tidyr_pivot_longer"="#9970AB",
+  "data_table_dcast"="#D6604D",
+  "stats_seshape"="deepskyblue")
+
+ml.reshape.atime <- atime::atime(
+  N=as.integer(10^seq(2, 7, by=0.5)),
+  setup={
+    df <- data.frame(
+      id = rep(1:N, each = 2),
+      category = rep(c("A", "B"), N),
+      value = rnorm(2 * N)
+      )
+    },
+  seconds.limit= seconds.limit,
+  #"stats_reshape"={
+    #stats::reshape(df, direction = "long", varying = list(ValueA ="valueA", valueB = "valueB"), v.names = "value", timevar = "category", times = c("A", "B"))
+    #},
+    "tidyr_pivot_longer" = {
+      tidyr::pivot_longer(df, cols = starts_with("value"), names_to = "category", values_to = "value", names_repair = "unique")
+    },
+    data_table_dcast = {
+      data.table::dcast(data.table(df), id ~ category, value.var = "value")
+    }
+  )
+
+```
+
+```{r}
+ml.reshape.refs <- atime::references_best(ml.reshape.atime)
+ml.reshape.pred <- predict(ml.reshape.refs)
+ml.reshape <- plot(ml.reshape.pred)+
+  theme(text=element_text(size=20))+
+  ggtitle(sprintf("Reshaping from wide to long over %dreal numbers, N times", n.folds))+
+  scale_x_log10("N = number of Mean,SD,Length to compute")+
+  scale_y_log10("Computation time (seconds)
+median line, min/max band
+over 10 timings")+
+  facet_null()+
+  scale_fill_manual(values=ml.colors)+
+  scale_color_manual(values=ml.colors)
+```
+
+```{r}
+ml.reshape
+```
+
+
+
+
+Reshaping Long to wide 
+
+
+
+```{r}
+
+ml.colors <- c(
+  "tidyr_pivot_wide"="#9970AB",
+  "data_table_dcast"="#D6604D",
+  "stats_reshape"="deepskyblue")
+
+ml.wide.atime <- atime::atime(
+  N=as.integer(10^seq(2, 7, by=0.5)),
+  
+  setup={
+    df <- data.frame(
+      id = rep(1:N, each = 2),
+      category = rep(c("A", "B"), N),
+      value = rnorm(2 * N)
+      )
+    },
+  seconds.limit= seconds.limit,
+  "stats_reshape"={
+    reshape(df, direction = "wide", idvar = "id", timevar = "category")
+    },
+    "tidyr_pivot_wide" = {
+      tidyr::pivot_wider(df, names_from = "category", values_from = value)
+    },
+    data_table_dcast = {
+      data.table::dcast(data.table(df), id ~ category, value.var = "value")
+    }
+  )
+
+```
+
+```{r}
+ml.wide.refs <- atime::references_best(ml.wide.atime)
+ml.wide.pred <- predict(ml.wide.refs)
+ml.wide <- plot(ml.wide.pred)+
+  theme(text=element_text(size=20))+
+  ggtitle(sprintf("Reshaping from long to wide over %dreal numbers, N times", n.folds))+
+  scale_x_log10("N = number of Mean,SD,Length to compute")+
+  scale_y_log10("Computation time (seconds)
+median line, min/max band
+over 10 timings")+
+  facet_null()+
+  scale_fill_manual(values=ml.colors)+
+  scale_color_manual(values=ml.colors)
+```
+
+```{r}
+ml.wide
+```
+
+
+```{r}
+library(microbenchmark)
+x <- rnorm(1e7)
+microbenchmark(mean(x), fmean(x), fmean(x, nthreads = 4))
+
+microbenchmark(colMeans(EuStockMarkets), fmean(EuStockMarkets))
+
+microbenchmark(sapply(mtcars, mean), fmean(mtcars))
+
+microbenchmark(base = sapply(GGDC10S[6:16], mean, na.rm = TRUE), fmean(GGDC10S[6:16]))
 ```
 

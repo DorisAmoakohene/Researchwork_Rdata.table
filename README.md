@@ -11,7 +11,7 @@ D. link to your atime test code(s), and plot(s) which lets us see the performanc
 
 1. Performance regression with .N and := #5424
    
-   A. [discusses regress](https://github.com/Rdatatable/data.table/issues/5424)
+   A. [discusses regression](https://github.com/Rdatatable/data.table/issues/5424)
    
    B. [CausesRegression](https://github.com/Rdatatable/data.table/pull/4491)
    

@@ -15,7 +15,9 @@ D. link to your atime test code(s), and plot(s) which lets us see the performanc
    
    B. [CausesRegression](https://github.com/Rdatatable/data.table/pull/4491)
    
-   C. [fixesRegression by by creating targetDesc function and adding snprintf in assign.c](https://github.com/Rdatatable/data.table/commit/e793f53466d99f86e70fc2611b708ae8c601a451) 
+   C. [fixesRegression by by creating targetDesc function and adding snprintf in assign.c](https://github.com/Rdatatable/data.table/commit/e793f53466d99f86e70fc2611b708ae8c601a451)
+
+   D.[link to my atime code](https://github.com/DorisAmoakohene/Researchwork_Rdata.table/blob/main/Performance%20regression%20with%235424.Rmd)
 
 
 

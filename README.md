@@ -4,7 +4,7 @@
 
 # Expanding the Open-Source Ecosystem for the R data.table Package
 
-This project, funded by the NSF under th POSE aiming to enhance the opensource surrounding the R data.table package.
+This project, funded by the NSF under th POSE is aiming to enhance the opensource surrounding the R data.table package.
 
 data.table is a powerful R package that provides an enhanced version of the traditional data.frame object. It is designed for efficient data manipulation, particularly for large datasets.
 

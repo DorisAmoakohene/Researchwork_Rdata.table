@@ -1,4 +1,26 @@
 # Researchwork_Rdata.table
+
+#DATA.TABlE
+
+#Expanding the Open-Source Ecosystem for the R data.table Package
+
+This project, funded by the NSF under th POSE aiming to enhance the opensource surrounding the R data.table package.
+
+data.table is a powerful R package that provides an enhanced version of the traditional data.frame object. It is designed for efficient data manipulation, particularly for large datasets.
+
+ ## Objective
+ 
+ 1. Documentation Enhancement
+ 2. Community Engagement
+ 3. Bug fixes and Performance Regression Optimization
+ 4. Package Extension
+
+## My Expected Outcomes
+
+A more stable and optimized data.table package, with improved performance and usability.
+
+## Performance Regression Analysis in the data.table Package
+
 A. link to the issue(s) comment(s) with original code(s) that reported the regression. (more than one if there was more than one issue with code that exhibits the regression) summary of symptom(s) in your own words.
 
 B. link to PR which caused the regression. what was the cause of the performance regression in the data.table code? (in your own words)

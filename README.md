@@ -32,17 +32,20 @@ D. link to your atime test code(s), and plot(s) which lets us see the performanc
 - png atime figure file(s)
 
 ## Performance Regression Analysis
-1. Performance regression with .N and := #5424
+1. 
    
-   A. [discusses regression](https://github.com/Rdatatable/data.table/issues/5424)
+   A. discusses regression: this link discusses the issue of Performance Regression with .N and := [issue5424](https://github.com/Rdatatable/data.table/issues/5424) other issues that was discussed includes [issues5366](https://github.com/Rdatatable/data.table/issues/5366) Significantly slower performance time-based rolling and [issue5371](https://github.com/Rdatatable/data.table/issues/5371)Memrecycle Performance Regression.
+These issues address performance-related concerns and propose potential fixes or improvements to the data.table package
    
-   B. [CausesRegression](https://github.com/Rdatatable/data.table/pull/4491)
+   B. The cause of the regression is related to the addition of the snprintf function in the assign.c. [CausesRegression](https://github.com/Rdatatable/data.table/pull/4491)
    
-   C. [fixesRegression by by creating targetDesc function and adding snprintf in assign.c](https://github.com/Rdatatable/data.table/commit/e793f53466d99f86e70fc2611b708ae8c601a451)
+   C. The Regression was fixed by creating targetDesc function and adding snprintf in assign.c [Fixes Regression](https://github.com/Rdatatable/data.table/commit/e793f53466d99f86e70fc2611b708ae8c601a451)
 
    D.[link to my atime code](https://github.com/DorisAmoakohene/Researchwork_Rdata.table/blob/main/Performance%20regression%20with%235424.Rmd)
 
-   [link to my plot](https://github.com/DorisAmoakohene/Researchwork_Rdata.table/tree/main/atime.list%20plot)
+   [link to plot#issues5424]()
+   [link to plot#issues5366]()
+   [link to plot#issues5371]()
 
 
 

@@ -1,8 +1,8 @@
 # Researchwork_Rdata.table
 
-#DATA.TABlE
+# DATA.TABLE
 
-#Expanding the Open-Source Ecosystem for the R data.table Package
+# Expanding the Open-Source Ecosystem for the R data.table Package
 
 This project, funded by the NSF under th POSE aiming to enhance the opensource surrounding the R data.table package.
 

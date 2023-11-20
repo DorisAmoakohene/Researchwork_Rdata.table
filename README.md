@@ -61,7 +61,7 @@ C. Fixed: (Fixes Regression by adding const int nth = getDTthreads)[ https://git
 D.
 (ink to my atime code)[https://github.com/DorisAmoakohene/Researchwork_Rdata.table/blob/main/groupby%20with%20dogroups%20(R%20expression)%20performance%20regression%20%234200.Rmd]
 
-(Link to my atime plot for this Regression)[[https://github.com/DorisAmoakohene/Researchwork_Rdata.table/blob/main/atime.list%20plot/atime.list.4200.png]
+(Link to my atime plot for this Regression)[https://github.com/DorisAmoakohene/Researchwork_Rdata.table/blob/main/atime.list%20plot/atime.list.4200.png]
 
 
 

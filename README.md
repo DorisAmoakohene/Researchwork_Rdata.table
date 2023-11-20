@@ -59,7 +59,8 @@ These issues address performance-related concerns and propose potential fixes or
  B. This is the (PR)[ https://github.com/Rdatatable/data.table/pull/4558] which discusses the issues
 Caused of Regression: (The Regression was caused by R's C eval by each group (q7 and q8 in db-benchmark)[https://github.com/Rdatatable/data.table/issues/4200#issue-555186870]
 
-C. Fixed: (Fixes Regression by adding const int nth = getDTthreads)[ https://github.com/Rdatatable/data.table/pull/4558/files]
+C. Fixed:  
+(Fixes Regression by adding const int nth = getDTthreads)[ https://github.com/Rdatatable/data.table/pull/4558/files]
 
 D.
 (ink to my atime code)[https://github.com/DorisAmoakohene/Researchwork_Rdata.table/blob/main/groupby%20with%20dogroups%20(R%20expression)%20performance%20regression%20%234200.Rmd]

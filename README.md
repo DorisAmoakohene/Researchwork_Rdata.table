@@ -32,7 +32,7 @@ D. link to your atime test code(s), and plot(s) which lets us see the performanc
 - png atime figure file(s)
 
 ## Performance Regression Analysis
-1. 
+# 1. 
    
    A. discusses regression: this link discusses the issue of Performance Regression with .N and := [issue5424](https://github.com/Rdatatable/data.table/issues/5424) other issues that was discussed includes [issues5366](https://github.com/Rdatatable/data.table/issues/5366) Significantly slower performance time-based rolling and [issue5371](https://github.com/Rdatatable/data.table/issues/5371)Memrecycle Performance Regression.
 These issues address performance-related concerns and propose potential fixes or improvements to the data.table package

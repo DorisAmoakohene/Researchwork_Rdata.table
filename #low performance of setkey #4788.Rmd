@@ -65,12 +65,15 @@ pkg.edit.fun=function(old.Package, new.Package, sha, new.pkg.path){
     },
   N=10^seq(3,8),
   setup={ 
-  
+    set.seed(1L)
+    dt <- data.table(
+      x = as.character(sample(N, N, FALSE)), 
+      y = runif(N))
   },
-  expr={},
-  #"Before"="76bb569",#https://github.com/Rdatatable/data.table/commit/76bb569fd7736b5f89471a35357e6a971ae1d424
-  "Regression"="34796cd1524828df9bf13a174265cb68a09fcd77", #https://github.com/Rdatatable/data.table/commit/34796cd1524828df9bf13a174265cb68a09fcd77,34796cd1524828df9bf13a174265cb68a09fcd77
-  "Fixed"="63632e6f55f1f5289c689edab37f6a69d2df25cf") #https://github.com/Rdatatable/data.table/commit/63632e6f55f1f5289c689edab37f6a
+  expr=data.table:::setkey(dt, x, verbose = TRUE),
+  "Before"="a4e26b50beaf0bb2aac40bbf47f9d1745579154a",#https://github.com/Rdatatable/data.table/commit/a4e26b50beaf0bb2aac40bbf47f9d1745579154a
+  "Regression"="34796cd1524828df9bf13a174265cb68a09fcd77") #https://github.com/Rdatatable/data.table/commit/34796cd1524828df9bf13a174265cb68a09fcd77,34796cd1524828df9bf13a174265cb68a09fcd77
+  #"Fixed"="63632e6f55f1f5289c689edab37f6a69d2df25cf") #https://github.com/Rdatatable/data.table/commit/63632e6f55f1f5289c689edab37f6a
 
 
 ```
@@ -81,6 +84,59 @@ plot(atime.list)
 
 
 
+
+
+```{r}
+ret<- reprex({
+  atime.list <- atime::atime_versions(
+pkg.path=tdir,
+pkg.edit.fun=function(old.Package, new.Package, sha, new.pkg.path){
+      pkg_find_replace <- function(glob, FIND, REPLACE){
+        atime::glob_find_replace(file.path(new.pkg.path, glob), FIND, REPLACE)
+      }
+      Package_regex <- gsub(".", "_?", old.Package, fixed=TRUE)
+      Package_ <- gsub(".", "_", old.Package, fixed=TRUE)
+      new.Package_ <- paste0(Package_, "_", sha)
+      pkg_find_replace(
+        "DESCRIPTION", 
+        paste0("Package:\\s+", old.Package),
+        paste("Package:", new.Package))
+      pkg_find_replace(
+        file.path("src","Makevars.*in"),
+        Package_regex,
+        new.Package_)
+      pkg_find_replace(
+        file.path("R", "onLoad.R"),
+        Package_regex,
+        new.Package_)
+      pkg_find_replace(
+        file.path("R", "onLoad.R"),
+        sprintf('packageVersion\\("%s"\\)', old.Package),
+        sprintf('packageVersion\\("%s"\\)', new.Package))
+      pkg_find_replace(
+        file.path("src", "init.c"),
+        paste0("R_init_", Package_regex),
+        paste0("R_init_", gsub("[.]", "_", new.Package_)))
+      pkg_find_replace(
+        "NAMESPACE",
+        sprintf('useDynLib\\("?%s"?', Package_regex),
+        paste0('useDynLib(', new.Package_))
+    },
+  N=10^seq(3,8),
+  setup={ 
+    n <- N/100
+    set.seed(1L)
+    dt <- data.table(
+      x = as.character(sample(5e6L, 5e6L, FALSE)), 
+      y = runif(n))
+  },
+  expr=data.table:::`[.data.table`(setkey(dt, x, verbose = TRUE)),
+  "Before"="76bb569fd7736b5f89471a35357e6a971ae1d424",#https://github.com/Rdatatable/data.table/commit/76bb569fd7736b5f89471a35357e6a971ae1d424
+  "Regression"="34796cd1524828df9bf13a174265cb68a09fcd77", #https://github.com/Rdatatable/data.table/commit/34796cd1524828df9bf13a174265cb68a09fcd77,34796cd1524828df9bf13a174265cb68a09fcd77
+  "Fixed"="63632e6f55f1f5289c689edab37f6a69d2df25cf") #https://github.com/Rdatatable/data.table/commit/63632e6f55f1f5289c689edab37f6a
+```
+
+```{r}
 
 ```
 

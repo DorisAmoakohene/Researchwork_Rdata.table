@@ -76,12 +76,17 @@ pkg.edit.fun=function(old.Package, new.Package, sha, new.pkg.path){
 
 
 ```
+
+
+
 ```{r}
-plot(atime.list)
+# Plotting code
+
+plot(atime.list, main = "Performance Regression with .N and :=")
 
 png("atime.list.png")
+plot(atime.list, main = "Performance Regression with .N and :=")
 dev.off()
-
 ```
 
 
@@ -141,14 +146,11 @@ pkg.edit.fun=function(old.Package, new.Package, sha, new.pkg.path){
 
 ```{r}
 plot(atime.list.2)
-```
 
-
-```{r}
+png("atime.list.2.png")
 plot(atime.list.2)
+dev.off()
 ```
-
-
 
 
 
@@ -198,20 +200,19 @@ pkg.edit.fun=function(old.Package, new.Package, sha, new.pkg.path){
     nIds <- 3
     tmCol <- rep(tm, nIds)
     idCol <- rep(c("a", "b", "c"), N)
-    
-    f1 <- function() {
-    dt <- data.table(tm = tmCol, v = 1, id = idCol)
+    dt <- data.table(tm = tmCol, v = 1)
+    dt[, id := idCol]
     dt[, tm1 := tm - 40]
     dt[, tm2 := tm]
     dt[, rowNum := .I]
-    dt[dt, .(vs = sum(v)), on = .(id, rowNum <= rowNum, tm >= tm1, tm < tm2), by = .EACHI]
-    }
     },
-
-  expr=data.table:::`[.data.table`(f1),
-  "Before"="be2f72e6f5c90622fe72e1c315ca05769a9dc854",
-  "Regression"="e793f53466d99f86e70fc2611b708ae8c601a451", #Before and Regression:https://github.com/Rdatatable/data.table/pull/4491/commits from this commits id in github. on(news items tweak and move items up)
-  "Fixed"="58409197426ced4714af842650b0cc3b9e2cb842") #fixed:#https://github.com/Rdatatable/data.table/pull/5463/commits; taken from the last commits in here. for fixed.
+  expr=data.table:::`[.data.table`(dt, .(vs = sum(v)),
+                                   on = .(id, rowNum <= rowNum, tm >= tm1, tm < tm2),
+                                   by = .EACHI
+                                   ),
+"Before"="be2f72e6f5c90622fe72e1c315ca05769a9dc854",
+"Regression"="e793f53466d99f86e70fc2611b708ae8c601a451", #Before and Regression:https://github.com/Rdatatable/data.table/pull/4491/commits from this commits id in github. on(news items tweak and move items up)
+"Fixed"="58409197426ced4714af842650b0cc3b9e2cb842") #fixed:#https://github.com/Rdatatable/data.table/pull/5463/commits; taken from the last commits in here. for fixed.
 
 
 ```
@@ -220,6 +221,7 @@ pkg.edit.fun=function(old.Package, new.Package, sha, new.pkg.path){
 plot(atime.list.3)
 
 png("atime.list.3.png")
+plot(atime.list.3)
 dev.off()
 ```
 

@@ -1,13 +1,16 @@
 ---
-title: "Remove deep copy of indices from shallow()"
+title: 'join operation almost 2 times slower #3928'
 author: "Doris Amoakohene"
 date: "`r Sys.Date()`"
 output: html_document
 ---
 
-Remove deep copy of indices from shallow() #4440
-https://github.com/Rdatatable/data.table/pull/4440
-https://github.com/Rdatatable/data.table/commits/master?after=db5ba4135ffb95dca6d43f115c34c5786147c3ba+454&branch=master&qualified_name=refs%2Fheads%2Fmaster
+
+https://github.com/Rdatatable/data.table/issues/3928
+
+https://github.com/Rdatatable/data.table/issues/3928#issuecomment-651408089
+https://github.com/Rdatatable/data.table/pull/3435
+
 
 
 ```{r}
@@ -16,10 +19,7 @@ library(atime)
 library(data.table)
 library(ggplot2)
 library(git2r)
-
 ```
-
-
 
 ```{r}
   tdir <- tempfile()
@@ -29,8 +29,7 @@ library(git2r)
 ```
 
 ```{r}
-
-atime.list.4440 <- atime::atime_versions(
+atime.list.3928 <- atime::atime_versions(
 pkg.path=tdir,
 pkg.edit.fun=function(old.Package, new.Package, sha, new.pkg.path){
       pkg_find_replace <- function(glob, FIND, REPLACE){
@@ -64,35 +63,22 @@ pkg.edit.fun=function(old.Package, new.Package, sha, new.pkg.path){
         sprintf('useDynLib\\("?%s"?', Package_regex),
         paste0('useDynLib(', new.Package_))
     },
-  N= 10^seq(3,8),
-  setup={
-    shallow <- data.table:::shallow
-    set.seed(1L)
-    dt <- data.table(
-      a=sample(N,N))
-    setindex(dt, a)
+  N=10^seq(3,8),
+  setup={ 
+    set.seed(108)
+    n2 = 1:N
+    n1 = sample(n2, N)
+    d1=data.table(id1=paste0("id",sample(n1)), id2=paste0("id",sample(n1)), v1=n1)
+    d2=data.table(id1=paste0("id",sample(n2)), id2=paste0("id",sample(n2)), v2=n2)
   },
-  expr=data.table:::shallow(dt),
-  "Before"="752012f577f8e268bb6d0084ca39a09fa7fbc1c4", #Before and Regression:https://github.com/Rdatatable/data.table/tree/752012f577f8e268bb6d0084ca39a09fa7fbc1c4)
-  "Regression"="ad7b67c80a551b7a1e2ef8b73d6162ed7737c934", #https://github.com/Rdatatable/data.table/tree/ad7b67c80a551b7a1e2ef8b73d6162ed7737c934
-  "Fixed"="9d3b9202fddb980345025a4f6ac451ed26a423be") #fixed:https://github.com/Rdatatable/data.table/tree/9d3b9202fddb980345025a4f6ac451ed26a423be.
-
-
+  expr=data.table:::`[.data.table`(d2(d1, v1 := i.v1, on=c("id1","id2"))),
+  "Before"="8b201fd28f5d4afcc4be026a5d9eb4bb6dd62955",#https://github.com/Rdatatable/data.table/commit/8b201fd28f5d4afcc4be026a5d9eb4bb6dd62955
+  "Regression"="e0140eafa07ad39a7ac9d67737cc43c4c95ca935") #https://github.com/Rdatatable/data.table/commit/e0140eafa07ad39a7ac9d67737cc43c4c95ca935
+  #"Fixed"="58409197426ced4714af842650b0cc3b9e2cb842") #fixed:#https://github.com/Rdatatable/data.table/pull/5463/commits; taken from the last commits in here. for fixed.
 ```
-
-
 ```{r}
-plot(atime.list.4440)
-
-png("atime.list.4440.png")
-plot(atime.list.4440)
-dev.off()
-
-```
-
-
-```{r}
-atime.list.sys.4440 <- atime::atime_versions(
+ret<- reprex({
+  atime.list <- atime::atime_versions(
 pkg.path=tdir,
 pkg.edit.fun=function(old.Package, new.Package, sha, new.pkg.path){
       pkg_find_replace <- function(glob, FIND, REPLACE){
@@ -126,35 +112,18 @@ pkg.edit.fun=function(old.Package, new.Package, sha, new.pkg.path){
         sprintf('useDynLib\\("?%s"?', Package_regex),
         paste0('useDynLib(', new.Package_))
     },
-  N= 10^seq(3,8),
-  setup={
-    dt1 <- data.table(a = sample(N,N))
-    set.seed(123L)
-    dt2 <- data.table(
-      a=sample(N,N))
-    setindex(dt2, a)
+  N=10^seq(3,8),
+setDTthreads(2L),
+  setup={ 
+    set.seed(108)
+    n2 = 1:N
+    n1 = sample(n2, N)
+    d1=data.table(id1=paste0("id",sample(n1)), id2=paste0("id",sample(n1)), v1=n1)
+    d2=data.table(id1=paste0("id",sample(n2)), id2=paste0("id",sample(n2)), v2=n2)
   },
-  expr= function(dt1, dt2) {
-    result <- NULL
-    for (i in seq_len(N)) {
-      result <- rbindlist(list(result, fintersect(dt2, dt1)))
-    }
-    result
-  },
-  "Before"="752012f577f8e268bb6d0084ca39a09fa7fbc1c4", #Before and Regression:https://github.com/Rdatatable/data.table/tree/752012f577f8e268bb6d0084ca39a09fa7fbc1c4)
-  "Regression"="ad7b67c80a551b7a1e2ef8b73d6162ed7737c934", #https://github.com/Rdatatable/data.table/tree/ad7b67c80a551b7a1e2ef8b73d6162ed7737c934
-  "Fixed"="9d3b9202fddb980345025a4f6ac451ed26a423be") #fixed:https://github.com/Rdatatable/data.table/tree/9d3b9202fddb980345025a4f6ac451ed26a423be.
-```
-
-
-
-```{r}
-plot(atime.list.sys.4440)
-
-plot(atime.list.sys.4440)
-
-png("atime.list.sys.4440.png")
-plot(atime.list.sys.4440)
-dev.off()
+  expr=data.table:::`[.data.table`(d2(d1, v1 := i.v1, on=c("id1","id2"))),
+  "Before"="8b201fd28f5d4afcc4be026a5d9eb4bb6dd62955",#https://github.com/Rdatatable/data.table/commit/8b201fd28f5d4afcc4be026a5d9eb4bb6dd62955
+  "Regression"="e0140eafa07ad39a7ac9d67737cc43c4c95ca935")
+})
 ```
 

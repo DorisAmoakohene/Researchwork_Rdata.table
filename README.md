@@ -53,7 +53,7 @@ These issues address performance-related concerns and propose potential fixes or
    [link to plot#issues5371](https://github.com/DorisAmoakohene/Researchwork_Rdata.table/blob/main/atime.list%20plot/atime.list.3.png)
 
 
-  # 2
+  # 2.
  A. [link to comment that reported Regression](https://github.com/Rdatatable/data.table/issues/4200)
   
 

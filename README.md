@@ -63,7 +63,8 @@ The objective is to provide users with optimized data manipulation techniques an
 
 This is a link to all the [codes](https://github.com/DorisAmoakohene/Researchwork_Rdata.table/blob/main/vignette%20atime%20data.t.Rmd) performing this analysis
 
-##Plot
+## Plot
+
 In this file, we conducted a comparison between data.table's CSV writing capabilities and other R packages such as readr, arrow, polars, and BaseR. The objective was to assess the performance and efficiency of these packages when it comes to writing CSV files in R
 1. [Writing CSV files ](https://github.com/DorisAmoakohene/Researchwork_Rdata.table/blob/main/png/gg.write.png) 
 

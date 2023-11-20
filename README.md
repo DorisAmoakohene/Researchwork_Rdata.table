@@ -51,4 +51,35 @@ These issues address performance-related concerns and propose potential fixes or
 
 
 
-     
+
+
+
+
+
+     # Efficiency of the Data.Table and other Packages
+This aspect of the project aims to enhance the atime compare-data.table-tidyverse vignette by conducting an efficiency analysis of data.table and popular R packages such as Polar, collapse, dplyr, baseR, and Reshape. 
+
+The objective is to provide users with optimized data manipulation techniques and enable them to make informed choices for efficient data processing within the R ecosystem."
+
+This is a link to all the [codes](https://github.com/DorisAmoakohene/Researchwork_Rdata.table/blob/main/vignette%20atime%20data.t.Rmd) performing this analysis
+
+##Plot
+In this file, we conducted a comparison between data.table's CSV writing capabilities and other R packages such as readr, arrow, polars, and BaseR. The objective was to assess the performance and efficiency of these packages when it comes to writing CSV files in R
+1. [Writing CSV files ](https://github.com/DorisAmoakohene/Researchwork_Rdata.table/blob/main/png/gg.write.png) 
+
+2. [Reading CSV Files](https://github.com/DorisAmoakohene/Researchwork_Rdata.table/blob/main/png/gg.read.png) 
+
+In this analysis, we examined the efficiency of summarizing data by group using data.table and various other packages including dplyr, stats, summarytools, psyc, and plyr. The goal was to compare the performance and effectiveness of these packages in performing group-wise data summarization tasks.
+
+3. [Summarizing by Group](https://github.com/DorisAmoakohene/Researchwork_Rdata.table/blob/main/png/ml.gg.png)
+
+4. [Summarize by group, expanded](https://github.com/DorisAmoakohene/Researchwork_Rdata.table/blob/main/png/ml.exp.gg.png)
+
+
+Conducted a comparison of data reshaping techniques between data.table and other packages such as Stats Reshape and tidyr. The focus was on evaluating the efficiency and effectiveness of these packages in transforming data between wide and long formats, enabling users to make informed choices based on their specific data reshaping needs.
+
+5. [Reshaping wide to long ](https://github.com/DorisAmoakohene/Researchwork_Rdata.table/blob/main/png/ml.reshape.png)
+
+6. [Reshaping Long to wide](https://github.com/DorisAmoakohene/Researchwork_Rdata.table/blob/main/png/ml.wide.png)
+
+

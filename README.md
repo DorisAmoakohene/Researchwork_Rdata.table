@@ -65,12 +65,12 @@ This is a link to all the [codes](https://github.com/DorisAmoakohene/Researchwor
 
 ## Plot
 
-In this file, we conducted a comparison between data.table's CSV writing capabilities and other R packages such as readr, arrow, polars, and BaseR. The objective was to assess the performance and efficiency of these packages when it comes to writing CSV files in R
+In this file, I conducted a comparison between data.table's CSV writing capabilities and other R packages such as readr, arrow, polars, and BaseR. The objective was to assess the performance and efficiency of these packages when it comes to writing CSV files in R
 1. [Writing CSV files ](https://github.com/DorisAmoakohene/Researchwork_Rdata.table/blob/main/png/gg.write.png) 
 
 2. [Reading CSV Files](https://github.com/DorisAmoakohene/Researchwork_Rdata.table/blob/main/png/gg.read.png) 
 
-In this analysis, we examined the efficiency of summarizing data by group using data.table and various other packages including dplyr, stats, summarytools, psyc, and plyr. The goal was to compare the performance and effectiveness of these packages in performing group-wise data summarization tasks.
+In this analysis, I  examined the efficiency of summarizing data by group using data.table and various other packages including dplyr, stats, summarytools, psyc, and plyr. The goal was to compare the performance and effectiveness of these packages in performing group-wise data summarization tasks.
 
 3. [Summarizing by Group](https://github.com/DorisAmoakohene/Researchwork_Rdata.table/blob/main/png/ml.gg.png)
 

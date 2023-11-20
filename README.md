@@ -68,7 +68,7 @@ D.
 
 
 
-     # Efficiency of the Data.Table and other Packages
+# Efficiency of the Data.Table and other Packages
 This aspect of the project aims to enhance the atime compare-data.table-tidyverse vignette by conducting an efficiency analysis of data.table and popular R packages such as Polar, collapse, dplyr, baseR, and Reshape. 
 
 The objective is to provide users with optimized data manipulation techniques and enable them to make informed choices for efficient data processing within the R ecosystem."

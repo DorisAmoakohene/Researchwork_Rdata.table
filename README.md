@@ -69,6 +69,18 @@ D.
 [Link to my atime plot for this Regression](https://github.com/DorisAmoakohene/Researchwork_Rdata.table/blob/main/atime.list%20plot/atime.list.4200.png)
 
 
+# 3.
+A.  [Major performance drop of keyed := when index is present #4311](https://github.com/Rdatatable/data.table/issues/4311)
+
+B. [Causes Regression](https://github.com/Rdatatable/data.table/issues/4311
+) The regression occurred due to the observation that modifying data by reference using the ":=" operator led to unintended slowness.
+
+C. [Fixes Regression by passing shallow(dt.s4) to the isS4() function](https://github.com/Rdatatable/data.table/pull/4440)
+
+D. [Link to my atime code showing this Regression](https://github.com/DorisAmoakohene/Researchwork_Rdata.table/blob/main/Remove%20deep%20copy%20of%20indices%20from%20shallow.Rmd)
+
+[link to my graph visualiazing my code]
+(https://github.com/DorisAmoakohene/Researchwork_Rdata.table/blob/main/atime.list%20plot/atime.list.4440.png)
 
 
 

@@ -31,6 +31,7 @@ D. link to your atime test code(s), and plot(s) which lets us see the performanc
 - R atime code file(s) 
 - png atime figure file(s)
 
+
 ## Performance Regression Analysis
 # 1. 
    
@@ -57,8 +58,8 @@ These issues address performance-related concerns and propose potential fixes or
  A. [link to comment that reported Regression](https://github.com/Rdatatable/data.table/issues/4200)
   
 
- B. This is the [PR]( https://github.com/Rdatatable/data.table/pull/4558) which discusses the issues
-Caused of Regression: [The Regression was caused by R's C eval by each group (q7 and q8 in db-benchmark)](https://github.com/Rdatatable/data.table/issues/4200#issue-555186870)
+ B. This is the [PR]( https://github.com/Rdatatable/data.table/pull/4558) that discusses the 
+Cause of the Regression: [The regression was specifically related to the evaluation of C code within each group of data, specifically q7 and q8 in the "db-benchmark"](https://github.com/Rdatatable/data.table/issues/4200#issue-555186870)  which appears that the regression occurred during the evaluation of C code within these particular groups, indicating a performance issue or slowness in the implementation of the code.
 
 C. Fixed:  
 [Fixes Regression by adding const int nth = getDTthreads]( https://github.com/Rdatatable/data.table/pull/4558/files)
@@ -79,10 +80,34 @@ C. [Fixes Regression by passing shallow(dt.s4) to the isS4() function](https://g
 
 D. [Link to my atime code showing this Regression](https://github.com/DorisAmoakohene/Researchwork_Rdata.table/blob/main/Remove%20deep%20copy%20of%20indices%20from%20shallow.Rmd)
 
-[link to my graph visualiazing my code]
-(https://github.com/DorisAmoakohene/Researchwork_Rdata.table/blob/main/atime.list%20plot/atime.list.4440.png)
+[link to my graph visualiazing my code](https://github.com/DorisAmoakohene/Researchwork_Rdata.table/blob/main/atime.list%20plot/atime.list.4440.png)
 
 
+# 4. 
+low performance of setkey function for version 1.12.0 and later #4788
+
+A. [Link to the PR that discusses and reported the regression](https://github.com/Rdatatable/data.table/issues/4788)
+
+B. [Link to the cause of the Regression](https://github.com/Rdatatable/data.table/issues/4788#issue-733285904). This Regression was caused due to the utilization of the setkey Function.  The issue lies in the substantial difference in execution time observed when utilizing the setkey function from different versions of the data.table package across various computer settings.
+
+C. This Regression is still open and yet to be fixed
+D. I am using this atime code to try and Reproduce a graph showing [the Regression and Before Regression of the issue](https://github.com/DorisAmoakohene/Researchwork_Rdata.table/blob/main/%23low%20performance%20of%20setkey%20%234788.Rmd).
+
+
+# 5.
+
+A. This Regression was reported in [join operation almost 2 times slower #3928](https://github.com/Rdatatable/data.table/issues/3928)
+
+B. [This was caused by the implementations of newer version of R from 3.6.1, causing the slow](https://github.com/Rdatatable/data.table/issues/3928#issuecomment-651408089)
+
+C. This Issue is still Opened
+
+D.
+
+
+# 6.
+
+A. 
 
 
 # Efficiency of the Data.Table and other Packages

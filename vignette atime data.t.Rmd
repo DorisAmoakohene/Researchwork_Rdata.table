@@ -493,6 +493,87 @@ ml.wide
 ```
 
 
+
+creating data frame
+
+```{r}
+library(data.table)
+library(dplyr)
+library(atime)
+
+ml.colors <- c(
+  "data_table_create" = "#D6604D",
+  "dplyr_create" = "deepskyblue",
+  "base_create" = "#9970AB"
+)
+```
+
+
+```{r}
+ml.create.atime <- atime::atime(
+  N = as.integer(10^seq(2, 7, by = 0.5)),
+  
+  data_table_create = {
+    dt <- data.table(
+      id = rep(1:N, each = 2),
+      category = rep(c("A", "B"), N),
+      value = rnorm(2 * N)
+    )
+  },
+  
+  dplyr_create = {
+    df <- tibble(
+      id = rep(1:N, each = 2),
+      category = rep(c("A", "B"), N),
+      value = rnorm(2 * N)
+    )
+  },
+  
+  base_create = {
+    df <- data.frame(
+      id = rep(1:N, each = 2),
+      category = rep(c("A", "B"), N),
+      value = rnorm(2 * N)
+    )
+  }
+)
+```
+
+
+```{r}
+ml.create.refs <- atime::references_best(ml.create.atime)
+ml.create.pred <- predict(ml.create.refs)
+ml.create <- plot(ml.create.pred) +
+  theme(text = element_text(size = 20)) +
+  ggtitle(sprintf("Creating data frames over %d rows", n.folds)) +
+  scale_x_log10("N = number of rows") +
+  scale_y_log10("Computation time (seconds)") +
+  facet_null() +
+  scale_fill_manual(values = ml.colors) +
+  scale_color_manual(values = ml.colors)
+```
+
+
+```{r}
+print(ml.create)
+ggsave("ml.create.png", ml.create, width = 10, height = 6, units = "in", dpi = 300)
+
+ml.create
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ```{r}
 library(microbenchmark)
 x <- rnorm(1e7)
@@ -761,5 +842,149 @@ ml.benchmark <- atime::atime(
 # Print the benchmark results
 print(ml.benchmark)
 plot(ml.benchmark)
+```
+
+
+
+
+
+
+
+
+
+
+
+```{r}
+
+ml.colors <- c(
+  "baseR"="#9970AB",
+  "dplyr"="#D6604D",
+  "data.table"="deepskyblue")
+
+ml.count.group <- atime::atime(
+  N=as.integer(10^seq(2, 7, by=0.5)),
+  
+  setup={
+    df <- mtcars
+    dt_32M <- data.table::rbindlist(replicate(1e6, mtcars, simplify = FALSE))
+    df_32M <- as.data.frame(dt_32M)
+    },
+  seconds.limit= seconds.limit,
+   base_32M = aggregate(hp ~ cyl, df_32M, function(x) length(unique(x))),
+  dplyr_length_unique = dplyr::summarise(df_32M,
+    count = length(unique(hp)),
+    .by = cyl
+  ),
+  dplyr_n_distinct = dplyr::summarise(df_32M,
+    count = dplyr::n_distinct(hp),
+    .by = cyl
+  ),
+  dplyr_unique_then_count = dplyr::summarise(
+    dplyr::distinct(df_32M, hp, cyl),
+    count = dplyr::n(),
+    .by = cyl
+  ),
+  dt_length_unique = dt_32M[, .(count = length(unique(hp))), keyby = cyl],
+  dt_uniqueN = dt_32M[, .(count = data.table::uniqueN(hp)), keyby = cyl],
+  dt_unique_then_count = {
+    dt <- unique(dt_32M, by = c("hp", "cyl"), cols = character())
+    dt[, list(count = .N), keyby = "cyl"]
+  },
+  )
+```
+
+
+
+```{r}
+df <- mtcars
+dt_32M <- data.table::rbindlist(replicate(1e6, mtcars, simplify = FALSE))
+df_32M <- as.data.frame(dt_32M)
+bench::mark(
+  base_32M = aggregate(hp ~ cyl, df_32M, function(x) length(unique(x))),
+  dplyr_length_unique = dplyr::summarise(df_32M,
+    count = length(unique(hp)),
+    .by = cyl
+  ),
+  dplyr_n_distinct = dplyr::summarise(df_32M,
+    count = dplyr::n_distinct(hp),
+    .by = cyl
+  ),
+  dplyr_unique_then_count = dplyr::summarise(
+    dplyr::distinct(df_32M, hp, cyl),
+    count = dplyr::n(),
+    .by = cyl
+  ),
+  dt_length_unique = dt_32M[, .(count = length(unique(hp))), keyby = cyl],
+  dt_uniqueN = dt_32M[, .(count = data.table::uniqueN(hp)), keyby = cyl],
+  dt_unique_then_count = {
+    dt <- unique(dt_32M, by = c("hp", "cyl"), cols = character())
+    dt[, list(count = .N), keyby = "cyl"]
+  },
+  check = FALSE
+)
+
+```
+
+```{r}
+library(data.table)
+library(dplyr)
+
+ml.colors <- c(
+  "baseR" = "#9970AB",
+  "dplyr" = "#D6604D",
+  "data.table" = "deepskyblue"
+)
+
+ml.count.group <- atime::atime(
+  N = as.integer(10^seq(2, 6, by = 0.5)),  # Reduced the range of N
+  
+  setup = {
+    df <- mtcars
+    dt_10M <- data.table::rbindlist(replicate(1e5, mtcars, simplify = FALSE))  # Reduced the number of replicates
+    df_10M <- as.data.frame(dt_10M)
+  },
+  
+  seconds.limit = 0.01,  # Replace `seconds.limit` with the desired time limit
+  
+  base_10M = aggregate(hp ~ cyl, df_10M, function(x) length(unique(x))),
+  
+  dplyr_length_unique = df_10M %>%
+    group_by(cyl) %>%
+    summarise(count = length(unique(hp))),
+  
+  dplyr_n_distinct = df_10M %>%
+    group_by(cyl) %>%
+    summarise(count = n_distinct(hp)),
+  
+  dplyr_unique_then_count = df_10M %>%
+    distinct(hp, cyl) %>%
+    group_by(cyl) %>%
+    summarise(count = n()),
+  
+  dt_length_unique = dt_10M[, .(count = length(unique(hp))), keyby = cyl],
+  
+  dt_uniqueN = dt_10M[, .(count = uniqueN(hp)), keyby = cyl],
+  
+  dt_unique_then_count = {
+    dt <- unique(dt_10M, by = c("hp", "cyl"), cols = character())
+    dt[, .(count = .N), keyby = cyl]
+  }
+)
+```
+
+
+```{r}
+ml.count.group.refs <- atime::references_best(ml.count.group)
+ml.count.group.pred <- predict(ml.count.group.refs)
+ml.count.group <- plot(ml.count.group.pred)+
+  theme(text=element_text(size=20))+
+  ggtitle(sprintf("Optimize unique and count group numbers operations", n.folds))+
+  scale_x_log10("N = number of Mean,SD,Length to compute")+
+  scale_y_log10("Computation time (seconds)
+median line, min/max band
+over 10 timings")+
+  facet_null()+
+  scale_fill_manual(values=ml.colors)+
+  scale_color_manual(values=ml.colors)
 ```
 

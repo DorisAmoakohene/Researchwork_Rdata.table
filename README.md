@@ -146,4 +146,6 @@ Conducted a comparison of data reshaping techniques between data.table and other
 
 6. [Reshaping Long to wide](https://github.com/DorisAmoakohene/Researchwork_Rdata.table/blob/main/png/ml.wide.png)
 
+This shows the comparison of creating data frames in R using data.frame, data.table and tibble in dplyr
 
+7. [Creating dataframe](https://github.com/DorisAmoakohene/Researchwork_Rdata.table/blob/main/ml.create.png)

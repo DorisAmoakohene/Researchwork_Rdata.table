@@ -66,16 +66,16 @@ pkg.edit.fun=function(old.Package, new.Package, sha, new.pkg.path){
     },
   N= 10^seq(3,8),
   setup={
-    shallow <- data.table:::shallow
     set.seed(1L)
     dt <- data.table(
       a=sample(N,N))
     setindex(dt, a)
+    dt2 <- data.table:::shallow(dt)
   },
-  expr=data.table:::shallow(dt),
-  "Before"="752012f577f8e268bb6d0084ca39a09fa7fbc1c4", #Before and Regression:https://github.com/Rdatatable/data.table/tree/752012f577f8e268bb6d0084ca39a09fa7fbc1c4)
-  "Regression"="ad7b67c80a551b7a1e2ef8b73d6162ed7737c934", #https://github.com/Rdatatable/data.table/tree/ad7b67c80a551b7a1e2ef8b73d6162ed7737c934
-  "Fixed"="9d3b9202fddb980345025a4f6ac451ed26a423be") #fixed:https://github.com/Rdatatable/data.table/tree/9d3b9202fddb980345025a4f6ac451ed26a423be.
+  expr=data.table:::`[.data.table`(dt2),
+  "Before"="752012f577f8e268bb6d0084ca39a09fa7fbc1c4", 
+  "Regression"="ad7b67c80a551b7a1e2ef8b73d6162ed7737c934", 
+  "Fixed"="9d3b9202fddb980345025a4f6ac451ed26a423be") 
 
 
 ```

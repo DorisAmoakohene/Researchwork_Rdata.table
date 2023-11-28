@@ -61,7 +61,7 @@ pkg.edit.fun=function(old.Package, new.Package, sha, new.pkg.path){
         sprintf('useDynLib\\("?%s"?', Package_regex),
         paste0('useDynLib(', new.Package_))
     },
-  N=10^seq(3,8),
+  N=10^seq(1,20),
   setup={ 
     set.seed(108)
     d <- data.table(
@@ -69,16 +69,20 @@ pkg.edit.fun=function(old.Package, new.Package, sha, new.pkg.path){
       v1 = sample(5L, N, TRUE),
       v2 = sample(5L, N, TRUE))
   },
-  expr=data.table:::`[.data.table`(d, max(v1)-min(v2), by = id3),
-  "Before"="f750448a2efcd258b3aba57136ee6a95ce56b302",#https://github.com/Rdatatable/data.table/tree/f750448a2efcd258b3aba57136ee6a95ce56b302
-  "Regression"="cd48100a96882af025213ef3a0f82fb3dfdd493e", #https://github.com/Rdatatable/data.table/tree/cd48100a96882af025213ef3a0f82fb3dfdd493e
-  "Fixed"="20d485587d258f7d820e5e4cc0089dd6bda6a141") #https://github.com/Rdatatable/data.table/tree/20d485587d258f7d820e5e4cc0089dd6bda6a141
+  expr=data.table:::`[.data.table`(d[, max(v1)-min(v2), by = id3]),
+"Before"="20d485587d258f7d820e5e4cc0089dd6bda6a141",
+  "Regression"="15f0598b9828d3af2eb8ddc9b38e0356f42afe4f", 
+  "Fixed"="ba32f3cba38ec270587e395f6e6c26a80be36be6") 
 ```
+
+
 ```{r}
-plot(atime.list.4200)
+plot(atime.list.4200)+
+  labs(title = "groupby with dogroups (R expression) performance regression")
 
 png("atime.list.4200.png")
-plot(atime.list.4200)
+plot(atime.list.4200)+
+  labs(title = "groupby with dogroups (R expression) performance regression")
 dev.off()
 
 ```

@@ -1,24 +1,21 @@
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [main, master]
   pull_request:
-    branches: [ "main" ]
+    branches: [main, master]
 
-permissions:
-  contents: read
-
-name: Asymptotic Testing
+name: Atime Rdata.table-pkg
 
 jobs:
-  test:
+  Atime-Pkg:
     runs-on: ubuntu-latest
-
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      R_KEEP_PKG_SOURCE: yes
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Run asymptotic testing
-        uses: SiyaoIsHiding/r-asymptotic-testing@v1
+      - uses: SiyaoIsHiding/r-asymptotic-testing@v1
+        with:
+          alpha: '"0.1"'
 
   

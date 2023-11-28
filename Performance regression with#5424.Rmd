@@ -81,11 +81,13 @@ pkg.edit.fun=function(old.Package, new.Package, sha, new.pkg.path){
 
 ```{r}
 # Plotting code
+plot(atime.list)+
+  labs(title = "Performance Regression with .N and :=")
 
-plot(atime.list, main = "Performance Regression with .N and :=")
 
 png("atime.list.png")
-plot(atime.list, main = "Performance Regression with .N and :=")
+plot(atime.list)+
+  labs(title = "Performance Regression with .N and :=")
 dev.off()
 ```
 
@@ -128,7 +130,7 @@ pkg.edit.fun=function(old.Package, new.Package, sha, new.pkg.path){
         sprintf('useDynLib\\("?%s"?', Package_regex),
         paste0('useDynLib(', new.Package_))
     },
-  N= seq(1, 1e4L),
+  N= 10^seq(1,4),
   setup={ 
     set.seed(123L)
     dt <- data.table(
@@ -144,11 +146,14 @@ pkg.edit.fun=function(old.Package, new.Package, sha, new.pkg.path){
 
 ```
 
+Significantly slower performance time-based rolling 
 ```{r}
-plot(atime.list.2)
+plot(atime.list.2)+
+  labs(title = "Significantly slower performance time-based rolling")
 
 png("atime.list.2.png")
-plot(atime.list.2)
+plot(atime.list.2)+
+  labs(title = "Significantly slower performance time-based rolling")
 dev.off()
 ```
 
@@ -206,9 +211,9 @@ pkg.edit.fun=function(old.Package, new.Package, sha, new.pkg.path){
     dt[, tm2 := tm]
     dt[, rowNum := .I]
     },
-  expr=data.table:::`[.data.table`(dt, .(vs = sum(v)),
-                                   on = .(id, rowNum <= rowNum, tm >= tm1, tm < tm2),
-                                   by = .EACHI
+  expr=data.table:::`[.data.table`(dt, , .(vs = sum(v)),
+                                   #on = .(id, rowNum <= rowNum, tm >= tm1, tm < tm2),
+                                   by = id
                                    ),
 "Before"="be2f72e6f5c90622fe72e1c315ca05769a9dc854",
 "Regression"="e793f53466d99f86e70fc2611b708ae8c601a451", #Before and Regression:https://github.com/Rdatatable/data.table/pull/4491/commits from this commits id in github. on(news items tweak and move items up)
@@ -218,10 +223,12 @@ pkg.edit.fun=function(old.Package, new.Package, sha, new.pkg.path){
 ```
 
 ```{r}
-plot(atime.list.3)
+plot(atime.list.3)+
+  labs(title = "Memrecycle Performance Regression")
 
 png("atime.list.3.png")
-plot(atime.list.3)
+plot(atime.list.3)+
+  labs(title = "Memrecycle Performance Regression")
 dev.off()
 ```
 

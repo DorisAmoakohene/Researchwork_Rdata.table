@@ -49,20 +49,20 @@ These issues address performance-related concerns and propose potential fixes or
 
    [link to plot#issues5424](https://github.com/DorisAmoakohene/Researchwork_Rdata.table/blob/main/atime.list%20plot/atime.list.png)
    
-   [link to plot#issues5366](https://github.com/DorisAmoakohene/Researchwork_Rdata.table/blob/main/atime.list%20plot/atime.list.2.png)
+   [link to plot#issues5366](https://github.com/DorisAmoakohene/Researchwork_Rdata.table/blob/main/atime.list.2.png)
    
    [link to plot#issues5371](https://github.com/DorisAmoakohene/Researchwork_Rdata.table/blob/main/atime.list%20plot/atime.list.3.png)
 
 
   # 2.
- A. [link to comment that reported Regression](https://github.com/Rdatatable/data.table/issues/4200)
+ A. This issue reported a  performance regression when performing group computations, specifically when running R's C eval on each group (q7 and q8) in the db-benchmark, indicating a  slowness in the implementation of the code.[link to comment that reported Regression](https://github.com/Rdatatable/data.table/issues/4200)
   
 
  B. This is the [PR]( https://github.com/Rdatatable/data.table/pull/4558) that discusses the 
 Cause of the Regression: [The regression was specifically related to the evaluation of C code within each group of data, specifically q7 and q8 in the "db-benchmark"](https://github.com/Rdatatable/data.table/issues/4200#issue-555186870)  which appears that the regression occurred during the evaluation of C code within these particular groups, indicating a performance issue or slowness in the implementation of the code.
 
 C. Fixed:  
-[Fixes Regression by adding const int nth = getDTthreads]( https://github.com/Rdatatable/data.table/pull/4558/files)
+[The regression was fixed Regression by the addition of const int nth = getDTthreads]( https://github.com/Rdatatable/data.table/pull/4558/files)
 
 D.
 [link to my atime code](https://github.com/DorisAmoakohene/Researchwork_Rdata.table/blob/main/groupby%20with%20dogroups%20(R%20expression)%20performance%20regression%20%234200.Rmd)
@@ -71,10 +71,10 @@ D.
 
 
 # 3.
-A.  [Major performance drop of keyed := when index is present #4311](https://github.com/Rdatatable/data.table/issues/4311)
+A. This issue reported that when using the dt[selector, foo := bar] syntax  with an index defined, the performance of that operation can be significantly slower compared to when there is no index.[Major performance drop of keyed := when index is present #4311](https://github.com/Rdatatable/data.table/issues/4311)
 
 B. [Causes Regression](https://github.com/Rdatatable/data.table/issues/4311
-) The regression occurred due to the observation that modifying data by reference using the ":=" operator led to unintended slowness.
+) The regression  was caused by utilizing the ":=" operator with an index present while modifying data by reference.
 
 C. [Fixes Regression by passing shallow(dt.s4) to the isS4() function](https://github.com/Rdatatable/data.table/pull/4440)
 

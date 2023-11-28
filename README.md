@@ -55,14 +55,14 @@ These issues address performance-related concerns and propose potential fixes or
 
 
   # 2.
- A. [link to comment that reported Regression](https://github.com/Rdatatable/data.table/issues/4200)
+ A. This issue reported a  performance regression when performing group computations, specifically when running R's C eval on each group (q7 and q8) in the db-benchmark, indicating a  slowness in the implementation of the code.[link to comment that reported Regression](https://github.com/Rdatatable/data.table/issues/4200)
   
 
  B. This is the [PR]( https://github.com/Rdatatable/data.table/pull/4558) that discusses the 
 Cause of the Regression: [The regression was specifically related to the evaluation of C code within each group of data, specifically q7 and q8 in the "db-benchmark"](https://github.com/Rdatatable/data.table/issues/4200#issue-555186870)  which appears that the regression occurred during the evaluation of C code within these particular groups, indicating a performance issue or slowness in the implementation of the code.
 
 C. Fixed:  
-[Fixes Regression by adding const int nth = getDTthreads]( https://github.com/Rdatatable/data.table/pull/4558/files)
+[The regression was fixed Regression by the addition of const int nth = getDTthreads]( https://github.com/Rdatatable/data.table/pull/4558/files)
 
 D.
 [link to my atime code](https://github.com/DorisAmoakohene/Researchwork_Rdata.table/blob/main/groupby%20with%20dogroups%20(R%20expression)%20performance%20regression%20%234200.Rmd)

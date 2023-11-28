@@ -71,10 +71,10 @@ D.
 
 
 # 3.
-A.  [Major performance drop of keyed := when index is present #4311](https://github.com/Rdatatable/data.table/issues/4311)
+A. This issue reported that when using the dt[selector, foo := bar] syntax  with an index defined, the performance of that operation can be significantly slower compared to when there is no index.[Major performance drop of keyed := when index is present #4311](https://github.com/Rdatatable/data.table/issues/4311)
 
 B. [Causes Regression](https://github.com/Rdatatable/data.table/issues/4311
-) The regression occurred due to the observation that modifying data by reference using the ":=" operator led to unintended slowness.
+) The regression  was caused by utilizing the ":=" operator with an index present while modifying data by reference.
 
 C. [Fixes Regression by passing shallow(dt.s4) to the isS4() function](https://github.com/Rdatatable/data.table/pull/4440)
 

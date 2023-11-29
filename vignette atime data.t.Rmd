@@ -140,8 +140,8 @@ read.colors <- c(
   "readr::read_csv\n(lazy=TRUE)"="#9970AB",
   "data.table::fread"="#D6604D",
   "read_csv_arrow"="#BF812D",
-  #"sparklyr::spark_read_csv"="#33A02C",
-  "polars::pl$read_csv"="orange",
+  #"sparklyr::spark_read_csv"="#722f37",
+  "polars::pl$read_csv"="#F1EB90",
   "utils::read.csv" = "deepskyblue")
 
 
@@ -206,12 +206,12 @@ Summarize by group
 
 ```{r}
 ml.colors <- c(
-  "dplyr::summarise"="#9970AB",
+  "dplyr::summarise"="#00FF00",
   "[.data.table"="#D6604D",
-  "stats::aggregate"="deepskyblue",
+  "stats::aggregate"="#4DB3E6",
   "summarytools::descr"="#00BFC4",
   "psych::describe"="#FFA500",
-  "plyr::ddply"="orange")
+  "plyr::ddply"="#FF0000FF")
   
 options(dplyr.summarise.inform=FALSE)
 n.folds <- 10
@@ -352,10 +352,10 @@ ml.exp.refs <- atime::references_best(ml.exp.atime)
 ml.exp.pred <- predict(ml.exp.refs)
 ml.exp.colors <- c(
   "collapse::fsummarise"="#5AAE61",
-  "dplyr::summarise"="#9970AB",
+  "dplyr::summarise"="#00FF00",
   "[.data.table(key)"="#D6604D",
   "[.data.table(no key)"="#B6604D",
-  "stats::aggregate"="deepskyblue")
+  "stats::aggregate"="#4DB3E6")
 ml.exp.gg <- plot(ml.exp.pred)+
   theme(text=element_text(size=20))+
   ggtitle(sprintf("Mean,SD,Length over %d real numbers, N times", n.folds))+
@@ -381,9 +381,9 @@ ml.exp.gg
 Reshaping wide to long 
 ```{r}
 ml.colors <- c(
-  "tidyr::tidyr_pivot_longer"="#9970AB",
+  "tidyr::tidyr_pivot_longer"="#D95F02",
   "data.table::melt"="#D6604D",
-  "stats::reshape"="deepskyblue")
+  "stats::reshape"="#4DB3E6")
 
 ml.reshape.atime <- atime::atime(
   N=as.integer(10^seq(2, 15, by=0.5)),
@@ -441,9 +441,9 @@ Reshaping Long to wide
 ```{r}
 
 ml.colors <- c(
-  "tidyr_pivot_wide"="#9970AB",
+  "tidyr_pivot_wide"="#D95F02",
   "data_table_dcast"="#D6604D",
-  "stats_reshape"="deepskyblue")
+  "stats_reshape"="#4DB3E6")
 
 ml.wide.atime <- atime::atime(
   N=as.integer(10^seq(2, 7, by=0.5)),
@@ -503,8 +503,8 @@ library(atime)
 
 ml.colors <- c(
   "data_table_create" = "#D6604D",
-  "dplyr_create" = "deepskyblue",
-  "base_create" = "#9970AB"
+  "dplyr_create" = "#00FF00",
+  "base_create" = "#7570B3"
 )
 ```
 
@@ -570,421 +570,4 @@ ml.create
 
 
 
-
-
-
-
-```{r}
-library(microbenchmark)
-x <- rnorm(1e7)
-microbenchmark(mean(x), fmean(x), fmean(x, nthreads = 4))
-
-microbenchmark(colMeans(EuStockMarkets), fmean(EuStockMarkets))
-
-microbenchmark(sapply(mtcars, mean), fmean(mtcars))
-
-microbenchmark(base = sapply(GGDC10S[6:16], mean, na.rm = TRUE), fmean(GGDC10S[6:16]))
-```
-
-
-```{r}
-# Load the necessary packages
-library(data.table)
-library(dplyr)
-library(atime)
-
-# Define the code snippets
-code_snippets <- list(
-  snippet1 = quote(microbenchmark(mean(x), fmean(x), fmean(x, nthreads = 4))),
-  snippet2 = quote(microbenchmark(colMeans(EuStockMarkets), fmean(EuStockMarkets))),
-  snippet3 = quote(microbenchmark(sapply(mtcars, mean), fmean(mtcars))),
-  snippet4 = quote(microbenchmark(base = sapply(GGDC10S[6:16], mean, na.rm = TRUE), fmean(GGDC10S[6:16])))
-)
-
-# Run the benchmark using atime.list
-ml.benchmark <- atime::atime(
-  N = as.integer(10^seq(2, 6, by=0.5)),
-  setup = {
-    # Generate random data
-    x <- rnorm(1e7)
-    EuStockMarkets <- as.matrix(EuStockMarkets)
-    mtcars <- as.data.frame(mtcars)
-    GGDC10S <- as.data.frame(GGDC10S)
-  },
-  code = code_snippets,
-  seconds.limit = 5
-)
-
-# Print the benchmark results
-print(ml.benchmark)
-```
-```{r}
-library(data.table)
-library(dplyr)
-
-
-
-x <- rnorm(1e7)
-g <- sample.int(1e6, 1e7, replace = TRUE)
-w <- abs(x)
-dt <- data.table(x = x, g = g)
-dt <- dt[, .(x), by = g]
-microbenchmark(clp = fmean(x, na.rm = FALSE), clp_g = fmean(x, g, use.g.names = FALSE, na.rm = FALSE),
-clp_g_w = fmean(x, g, w, use.g.names = FALSE, na.rm = FALSE), dt = dt[, mean(x), keyby = g])
-
-# Print the result
-print(dt)
-```
-
-
-```{r}
-library(data.table) # Serial CRAN Binary for M1 MAC
-x <- rnorm(1e7)
-g <- sample.int(1e6, 1e7, replace = TRUE); w <- abs(x)
-dt <- setkey(data.table(x, g), g); g <- GRP(g)
-microbenchmark(clp = fmean(x, na.rm = FALSE), clp_g = fmean(x, g, use.g.names = FALSE, na.rm = FALSE),
-clp_g_w = fmean(x, g, w, use.g.names = FALSE, na.rm = FALSE), dt = dt[, mean(x), keyby = g])
-```
-
-```{r}
-library(data.table) # Serial CRAN Binary for M1 MAC
-library(atime)
-
-ml.colors <- c(
-  clp = "#9970AB",
-  clp_g = "#D6604D",
-  clp_g_w = "#BF812D",
-  dt = "#F1EB90"
-)
-
-x <- rnorm(1e7)
-g <- sample.int(1e6, 1e7, replace = TRUE)
-w <- abs(x)
-dt <- setkey(data.table(x, g), g)
-g <- GRP(g)
-
-atime.operations <- atime::atime(
-  setup = {
-    library(data.table)
-    x <- rnorm(1e7)
-    g <- sample.int(1e6, 1e7, replace = TRUE)
-    w <- abs(x)
-    dt <- setkey(data.table(x, g), g)
-    g <- GRP(g)
-  },
-  clp = {
-    fmean(x, na.rm = FALSE)
-  },
-  clp_g = {
-    fmean(x, g, use.g.names = FALSE, na.rm = FALSE)
-  },
-  clp_g_w = {
-    fmean(x, g, w, use.g.names = FALSE, na.rm = FALSE)
-  },
-  dt = {
-    dt[, mean(x), keyby = g]
-  }
-)
-
-print(atime.operations)
-plot(atime.operations)
-```
-
-
-```{r}
-ml.operations.refs <- atime::references_best(atime.operations)
-ml.operations.pred <- predict(ml.operations.refs)
-ml.operations <- plot(ml.operations.pred) +
-  theme(text = element_text(size = 20)) +
-  ggtitle(sprintf("microbenchmarking, N times", n.rows)) +
-  scale_x_log10("N = number of Mean, SD, Length to compute") +
-  scale_y_log10("Computation time (seconds)\nmedian line, min/max band\nover 10 timings") +
-  facet_null() +
-  scale_fill_manual(values = ml.colors) +
-  scale_color_manual(values = ml.colors) +
-  coord_cartesian(ylim = c(1e-6, 1e2))  # Adjust the y-axis limits to show the desired range
-```
-
-```{r}
-ml.operations.refs <- atime::references_best(atime.operations)
-ml.operations.pred <- predict(ml.operations.refs)
-ml.operations <- plot(ml.operations.pred)+
-  theme(text=element_text(size=20))+
-  ggtitle(sprintf("microbenchmarking, N times", n.rows))+
-  scale_x_log10("N = number of Mean,SD,Length to compute")+
-  scale_y_log10("Computation time (seconds)
-median line, min/max band
-over 10 timings")+
-  facet_null()+
-  scale_fill_manual(values=ml.colors)+
-  scale_color_manual(values=ml.colors)
-```
-
-```{r}
-print(ml.operations)
-ggsave("ml.operations.png", ml.operations, width = 10, height = 6, units = "in", dpi = 300)
-dev.off()
-
-ml.reshape
-```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-```{r}
-# Define the code snippets
-code_snippets <- list(
-  clp = quote(fmean(x, na.rm = FALSE)),
-  clp_g = quote(fmean(x, g, use.g.names = FALSE, na.rm = FALSE)),
-  clp_g_w = quote(fmean(x, g, w, use.g.names = FALSE, na.rm = FALSE)),
-  dt = quote(dt[, mean(x), keyby = g])
-)
-
-# Run the benchmark using atime.list
-ml.benchmark <- atime::atime(
-  N = 1,
-  setup = {
-    x <- rnorm(1e7)
-    g <- sample.int(1e6, 1e7, replace = TRUE)
-    w <- abs(x)
-    dt <- setkey(data.table(x, g), g)
-    g <- GRP(g)
-  },
-  code = code_snippets,
-  seconds.limit = 5
-)
-
-# Print the benchmark results
-print(ml.benchmark)
-```
-
-
-```{r}
-library(data.table)
-library(microbenchmark)
-
-# Generate random data
-x <- rnorm(1e7)
-g <- sample.int(1e6, 1e7, replace = TRUE)
-w <- abs(x)
-
-# Create a data.table
-dt <- data.table(x, g)
-setkey(dt, g)
-
-# Define the different computations to benchmark
-clp <- expression(mean(x, na.rm = FALSE))
-clp_g <- expression(dt[, mean(x), keyby = g])
-
-# Run the benchmark
-benchmark_results <- microbenchmark(clp = eval(clp), dt = eval(clp_g))
-
-# Print the benchmark results
-print(benchmark_results)
-```
-
-
-
-```{r}
-# Generate random data
-x <- rnorm(1e7)
-g <- sample.int(1e6, 1e7, replace = TRUE)
-w <- abs(x)
-
-# Create a data.table
-dt <- data.table(x, g)
-setkey(dt, g)
-
-# Define the different computations to benchmark
-code_snippets <- list(
-  clp = quote(mean(x, na.rm = FALSE)),
-  dt = quote(dt[, mean(x), keyby = g])
-)
-
-# Run the benchmark using atime.list
-ml.benchmark <- atime::atime(
-  N = as.integer(10^seq(2, 6, by=0.5)),
-  setup = {
-    # Generate random data
-    x <- rnorm(1e7)
-    g <- sample.int(1e6, 1e7, replace = TRUE)
-    w <- abs(x)
-    
-    # Create a data.table
-    dt <- data.table(x, g)
-    setkey(dt, g)
-  },
-  code = code_snippets,
-  seconds.limit = 5
-)
-
-# Print the benchmark results
-print(ml.benchmark)
-plot(ml.benchmark)
-```
-
-
-
-
-
-
-
-
-
-
-
-```{r}
-
-ml.colors <- c(
-  "baseR"="#9970AB",
-  "dplyr"="#D6604D",
-  "data.table"="deepskyblue")
-
-ml.count.group <- atime::atime(
-  N=as.integer(10^seq(2, 7, by=0.5)),
-  
-  setup={
-    df <- mtcars
-    dt_32M <- data.table::rbindlist(replicate(1e6, mtcars, simplify = FALSE))
-    df_32M <- as.data.frame(dt_32M)
-    },
-  seconds.limit= seconds.limit,
-   base_32M = aggregate(hp ~ cyl, df_32M, function(x) length(unique(x))),
-  dplyr_length_unique = dplyr::summarise(df_32M,
-    count = length(unique(hp)),
-    .by = cyl
-  ),
-  dplyr_n_distinct = dplyr::summarise(df_32M,
-    count = dplyr::n_distinct(hp),
-    .by = cyl
-  ),
-  dplyr_unique_then_count = dplyr::summarise(
-    dplyr::distinct(df_32M, hp, cyl),
-    count = dplyr::n(),
-    .by = cyl
-  ),
-  dt_length_unique = dt_32M[, .(count = length(unique(hp))), keyby = cyl],
-  dt_uniqueN = dt_32M[, .(count = data.table::uniqueN(hp)), keyby = cyl],
-  dt_unique_then_count = {
-    dt <- unique(dt_32M, by = c("hp", "cyl"), cols = character())
-    dt[, list(count = .N), keyby = "cyl"]
-  },
-  )
-```
-
-
-
-```{r}
-df <- mtcars
-dt_32M <- data.table::rbindlist(replicate(1e6, mtcars, simplify = FALSE))
-df_32M <- as.data.frame(dt_32M)
-bench::mark(
-  base_32M = aggregate(hp ~ cyl, df_32M, function(x) length(unique(x))),
-  dplyr_length_unique = dplyr::summarise(df_32M,
-    count = length(unique(hp)),
-    .by = cyl
-  ),
-  dplyr_n_distinct = dplyr::summarise(df_32M,
-    count = dplyr::n_distinct(hp),
-    .by = cyl
-  ),
-  dplyr_unique_then_count = dplyr::summarise(
-    dplyr::distinct(df_32M, hp, cyl),
-    count = dplyr::n(),
-    .by = cyl
-  ),
-  dt_length_unique = dt_32M[, .(count = length(unique(hp))), keyby = cyl],
-  dt_uniqueN = dt_32M[, .(count = data.table::uniqueN(hp)), keyby = cyl],
-  dt_unique_then_count = {
-    dt <- unique(dt_32M, by = c("hp", "cyl"), cols = character())
-    dt[, list(count = .N), keyby = "cyl"]
-  },
-  check = FALSE
-)
-
-```
-
-```{r}
-library(data.table)
-library(dplyr)
-
-ml.colors <- c(
-  "baseR" = "#9970AB",
-  "dplyr" = "#D6604D",
-  "data.table" = "deepskyblue"
-)
-
-ml.count.group <- atime::atime(
-  N = as.integer(10^seq(2, 6, by = 0.5)),  # Reduced the range of N
-  
-  setup = {
-    df <- mtcars
-    dt_10M <- data.table::rbindlist(replicate(1e5, mtcars, simplify = FALSE))  # Reduced the number of replicates
-    df_10M <- as.data.frame(dt_10M)
-  },
-  
-  seconds.limit = 0.01,  # Replace `seconds.limit` with the desired time limit
-  
-  base_10M = aggregate(hp ~ cyl, df_10M, function(x) length(unique(x))),
-  
-  dplyr_length_unique = df_10M %>%
-    group_by(cyl) %>%
-    summarise(count = length(unique(hp))),
-  
-  dplyr_n_distinct = df_10M %>%
-    group_by(cyl) %>%
-    summarise(count = n_distinct(hp)),
-  
-  dplyr_unique_then_count = df_10M %>%
-    distinct(hp, cyl) %>%
-    group_by(cyl) %>%
-    summarise(count = n()),
-  
-  dt_length_unique = dt_10M[, .(count = length(unique(hp))), keyby = cyl],
-  
-  dt_uniqueN = dt_10M[, .(count = uniqueN(hp)), keyby = cyl],
-  
-  dt_unique_then_count = {
-    dt <- unique(dt_10M, by = c("hp", "cyl"), cols = character())
-    dt[, .(count = .N), keyby = cyl]
-  }
-)
-```
-
-
-```{r}
-ml.count.group.refs <- atime::references_best(ml.count.group)
-ml.count.group.pred <- predict(ml.count.group.refs)
-ml.count.group <- plot(ml.count.group.pred)+
-  theme(text=element_text(size=20))+
-  ggtitle(sprintf("Optimize unique and count group numbers operations", n.folds))+
-  scale_x_log10("N = number of Mean,SD,Length to compute")+
-  scale_y_log10("Computation time (seconds)
-median line, min/max band
-over 10 timings")+
-  facet_null()+
-  scale_fill_manual(values=ml.colors)+
-  scale_color_manual(values=ml.colors)
-```
 
